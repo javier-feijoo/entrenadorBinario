@@ -68,45 +68,49 @@ export async function renderBin2Dec(root){
   const st = store.load();
   helpVisible = (st.settings?.showWeightsByDefault ?? false);
 
-  root.innerHTML = `
-    <section class="view-card">
-      <div class="card pad">
-        <h2 class="section-title">Modo: Binario → Decimal</h2>
+ root.innerHTML = `
+  <section class="view-card">
+    <div class="card pad">
+      <h2 class="section-title">Modo: Binario → Decimal</h2>
 
-        <div class="game-wrap">
-          <div class="target-row" style="display:grid; justify-items:center; gap:.35rem;">
-            <div class="muted">Número binario:</div>
-            <div class="target-big" id="shownBinary" aria-live="polite">—</div>
-          </div>
-
-        <div class="form-row" style="justify-content:center; gap:.6rem">
-          <label class="pill big" style="background:#0a1433">
-            <input type="checkbox" id="toggleHelpB2D"> Mostrar ayuda (128…1)
-          </label>
-          <span class="pill big" id="scoreHintB2D">Aciertos: x1</span>
-        </div>
-
-          <div class="weights-row grid-8" id="weightsB2D" aria-hidden="true"></div>
-          <div class="bits-grid grid-8 readonly" id="bitsB2D"
-               role="group" aria-label="Bits mostrados (solo lectura)"></div>
-
-          <div class="actions-row">
-            <span class="pill big" aria-live="polite" aria-label="Intentos restantes">
-              Intentos: <strong id="triesB2D">3</strong>
-            </span>
-            <button class="btn good btn-xl" id="btnCheckB2D">Comprobar</button>
-          </div>
-
-          <div class="form-row center" style="margin-top:.4rem">
-            <label for="answerB2D" class="sr-only">Respuesta decimal</label>
-            <input id="answerB2D" class="input-lg wide" type="number" min="0" max="255" placeholder="Tu respuesta (0-255)" />
-          </div>
-
-          <div class="feedback" id="fbB2D" aria-live="polite"></div>
-        </div>
+      <!-- Barra de controles arriba, a la derecha -->
+      <div class="helpbar" role="group" aria-label="Controles de ayuda y puntuación">
+        <label class="switch" for="toggleHelpB2D">
+          <span>Ayuda</span>
+          <input type="checkbox" id="toggleHelpB2D" aria-label="Mostrar ayuda (valores 128 a 1)">
+          <span class="track" aria-hidden="true"><span class="knob"></span></span>
+          <span class="labels"><span class="no">No</span><span class="yes">Sí</span></span>
+        </label>
+        <span class="hint" id="scoreHintB2D">Aciertos: x1</span>
       </div>
-    </section>
-  `;
+
+      <div class="game-wrap">
+        <div class="target-row" style="display:grid; justify-items:center; gap:.35rem;">
+          <div class="muted">Número binario:</div>
+          <div class="target-big" id="shownBinary" aria-live="polite">—</div>
+        </div>
+
+        <div class="weights-row grid-8" id="weightsB2D" aria-hidden="true"></div>
+        <div class="bits-grid grid-8 readonly" id="bitsB2D"
+             role="group" aria-label="Bits mostrados (solo lectura)"></div>
+
+        <div class="actions-row">
+          <span class="pill big" aria-live="polite" aria-label="Intentos restantes">
+            Intentos: <strong id="triesB2D">3</strong>
+          </span>
+          <button class="btn good btn-xl" id="btnCheckB2D">Comprobar</button>
+        </div>
+
+        <div class="form-row center" style="margin-top:.4rem">
+          <label for="answerB2D" class="sr-only">Respuesta decimal</label>
+          <input id="answerB2D" class="input-lg wide" type="number" min="0" max="255" placeholder="Tu respuesta (0-255)" />
+        </div>
+
+        <div class="feedback" id="fbB2D" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+`;
 
   // Inicializar bits (solo lectura) y pesos
   bitsReadonly = createBits($('#bitsB2D', root), { readonly: true });

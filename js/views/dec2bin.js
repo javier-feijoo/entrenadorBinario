@@ -67,37 +67,41 @@ export async function renderDec2Bin(root){
   helpVisible = (st.settings?.showWeightsByDefault ?? false);
 
   root.innerHTML = `
-    <section class="view-card">
-      <div class="card pad">
-        <h2 class="section-title">Modo: Decimal → Binario</h2>
+  <section class="view-card">
+    <div class="card pad">
+      <h2 class="section-title">Modo: Decimal → Binario</h2>
 
-        <div class="game-wrap">
-          <div class="target-big" id="targetD2B" aria-live="polite">—</div>
-
-          <div class="form-row" style="justify-content:center; gap:.6rem">
-            <label class="pill big" style="background:#0a1433">
-              <input type="checkbox" id="toggleHelpD2B"> Mostrar ayuda (128…1)
-            </label>
-            <span class="pill big" id="scoreHintD2B">Aciertos: x1</span>
-          </div>
-
-          <div class="weights-row grid-8" id="weightsD2B" aria-hidden="true"></div>
-
-          <div class="bits-grid grid-8" id="bitsD2B"
-               role="group" aria-label="Interruptores de bits (MSB a LSB)"></div>
-
-          <div class="actions-row">
-            <span class="pill big" aria-live="polite" aria-label="Intentos restantes">
-              Intentos: <strong id="triesD2B">3</strong>
-            </span>
-            <button class="btn good btn-xl" id="btnCheckD2B">Comprobar</button>
-          </div>
-
-          <div class="feedback" id="fbD2B" aria-live="polite"></div>
-        </div>
+      <!-- Barra de controles arriba, a la derecha -->
+      <div class="helpbar" role="group" aria-label="Controles de ayuda y puntuación">
+        <label class="switch" for="toggleHelpD2B">
+          <span>Ayuda</span>
+          <input type="checkbox" id="toggleHelpD2B" aria-label="Mostrar ayuda (valores 128 a 1)">
+          <span class="track" aria-hidden="true"><span class="knob"></span></span>
+          <span class="labels"><span class="no">No</span><span class="yes">Sí</span></span>
+        </label>
+        <span class="hint" id="scoreHintD2B">Aciertos: x1</span>
       </div>
-    </section>
-  `;
+
+      <div class="game-wrap">
+        <div class="target-big" id="targetD2B" aria-live="polite">—</div>
+
+        <div class="weights-row grid-8" id="weightsD2B" aria-hidden="true"></div>
+
+        <div class="bits-grid grid-8" id="bitsD2B"
+             role="group" aria-label="Interruptores de bits (MSB a LSB)"></div>
+
+        <div class="actions-row">
+          <span class="pill big" aria-live="polite" aria-label="Intentos restantes">
+            Intentos: <strong id="triesD2B">3</strong>
+          </span>
+          <button class="btn good btn-xl" id="btnCheckD2B">Comprobar</button>
+        </div>
+
+        <div class="feedback" id="fbD2B" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+`;
 
   // Inicializar componentes
   bitsApi = createBits($('#bitsD2B', root), { onToggle: ()=>{} });
