@@ -255,3 +255,7 @@ code,kbd{font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 .view-card .weights-row{ display: grid !important; }
 .view-card .bits.center{ justify-content: initial !important; }
 .view-card .bits.bits-xl{ gap: var(--bit-gap) !important; padding: 0 !important; }
+
+/* --- Fix visibilidad de ayudas (128…1) --- */
+[hidden] { display: none !important; }              /* refuerza el atributo hidden */
+.weights-row[hidden] { display: none !important; }  /* por si hay reglas con !important */
