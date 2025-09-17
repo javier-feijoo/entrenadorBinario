@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Binario Trainer</title>
+<meta name="description" content="Juego accesible para practicar binario ↔ decimal (8 bits)." />
+<link rel="stylesheet" href="assets/css/styles.css" />
+<link rel="preload" href="assets/img/bronce.png" as="image" />
+<link rel="preload" href="assets/img/plata.png" as="image" />
+<link rel="preload" href="assets/img/oro.png" as="image" />
+<link rel="preload" href="assets/img/platino.png" as="image" />
+<link rel="preload" href="assets/img/diamante.png" as="image" />
+</head>
+<body>
+<div class="app" role="application">
+<header class="site-header" role="banner">
+<div class="brand">
+<div class="logo" aria-hidden="true">8b</div>
+<div>
+<h1 class="title">Binario Trainer</h1>
+<p id="userWelcome" class="subtitle">Bienvenido</p>
+</div>
+</div>
+<nav class="main-nav" aria-label="Navegación principal">
+<button class="btn nav" data-to="#menu">Menú</button>
+<button class="btn nav" data-to="#dec2bin">Dec→Bin</button>
+<button class="btn nav" data-to="#bin2dec">Bin→Dec</button>
+<button class="btn nav" data-to="#stats">Estadísticas</button>
+<button class="btn nav" data-to="#settings">Ajustes</button>
+</nav>
+</header>
+
+
+<main id="app-root" tabindex="-1"><!-- El router inyecta aquí las vistas --></main>
+
+
+<footer class="site-footer">SPA educativa · Datos en localStorage · Tema azul accesible</footer>
+
+
+<!-- Audio por defecto (podrás sustituir los ficheros) -->
+<audio id="audio-click" src="assets/sounds/click.mp3" preload="none"></audio>
+<audio id="audio-success" src="assets/sounds/acierto.mp3" preload="none"></audio>
+<audio id="audio-error" src="assets/sounds/fallo.mp3" preload="none"></audio>
+<audio id="audio-level" src="assets/sounds/nivel.mp3" preload="none"></audio>
+
+
+<!-- Región aria-live para mensajes -->
+<div id="live" class="sr-only" role="status" aria-live="polite"></div>
+</div>
+
+
+<script type="module" src="js/app.js"></script>
+</body>
