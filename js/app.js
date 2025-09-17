@@ -5,6 +5,7 @@ import { store } from './store.js';
 import { audio } from './audio.js';
 import { setWelcome, enableHeaderNav } from './ui.js';
 import { register, setNotFound, startRouter, navigate } from './router.js';
+import { refreshHeader } from './ui.js';
 
 
 // Vistas
@@ -33,7 +34,7 @@ async function bootstrap(){
 // Cargar estado inicial y preparar sistema de audio
 const state = store.load();
 audio.init();
-
+refreshHeader(state);
 
 // HUD de cabecera
 setWelcome(state);
@@ -59,8 +60,7 @@ setNotFound((root)=>{ root.innerHTML = '<section class="view-card"><div class="c
 // Refrescar accesos del header cuando cambie la ruta (por si cambia el usuario/estado)
 window.addEventListener('hashchange', () => {
 const s = store.load();
-setWelcome(s);
-enableHeaderNav(s);
+refreshHeader(state);
 });
 
 

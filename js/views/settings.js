@@ -1,7 +1,4 @@
-// js/views/settings.js (final)
-// Panel de ajustes: mute, volumen y prueba de sonidos.
-// Mantiene compatibilidad con estados antiguos (sin propiedades mute/volume).
-
+// js/views/settings.js — Sonido + (NUEVO) Ayuda y Puntuación
 import { store, defaultState } from '../store.js';
 import { $, announce } from '../ui.js';
 import { audio } from '../audio.js';
@@ -16,7 +13,6 @@ function applyAudioSettings({ mute=false, volume=1 }){
 }
 
 function getSoundState(state){
-  // valores por defecto sin romper estados previos
   const def = defaultState().sounds;
   const s = state.sounds || def;
   return {
@@ -32,32 +28,43 @@ function getSoundState(state){
 export async function renderSettings(root){
   const state = store.load();
   const snd = getSoundState(state);
+  const setts = { ...defaultState().settings, ...(state.settings||{}) };
 
   root.innerHTML = `
     <section class="view-card">
       <div class="card pad">
         <h2 class="section-title">Ajustes</h2>
-        <p class="muted">Los sonidos por defecto están en <code>assets/sounds/</code>. Puedes sustituir los ficheros en cualquier momento.</p>
-
         <div class="grid cols-2">
           <div>
+            <h3 class="section-title" style="font-size:1.1rem">Sonido</h3>
             <div class="form-row" style="margin:.25rem 0 .5rem">
               <label for="muteToggle">Silencio total</label>
               <input type="checkbox" id="muteToggle" ${snd.mute ? 'checked' : ''} aria-label="Silenciar todos los sonidos"/>
             </div>
-
             <div class="form-row" style="margin:.25rem 0 .8rem">
               <label for="volRange">Volumen</label>
               <input type="range" id="volRange" min="0" max="100" value="${Math.round(snd.volume*100)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(snd.volume*100)}" aria-label="Volumen (0 a 100)">
               <span id="volLabel" class="pill">${Math.round(snd.volume*100)}%</span>
             </div>
-
             <div class="form-row wrap" style="margin:.25rem 0 .25rem">
               <button class="btn" id="testClick">Probar “click”</button>
               <button class="btn good" id="testSuccess">Probar “acierto”</button>
               <button class="btn bad" id="testError">Probar “fallo”</button>
               <button class="btn" id="testLevel">Probar “subir nivel”</button>
             </div>
+
+            <hr style="border-color: var(--border); opacity:.35; margin:1rem 0">
+
+            <h3 class="section-title" style="font-size:1.1rem">Ayuda y puntuación</h3>
+            <div class="form-row" style="margin:.25rem 0 .5rem">
+              <label for="showWeightsDefault">Mostrar ayuda (128…1) por defecto</label>
+              <input type="checkbox" id="showWeightsDefault" ${setts.showWeightsByDefault ? 'checked':''}>
+            </div>
+            <div class="form-row" style="margin:.25rem 0 .5rem">
+              <label for="doubleScoreNoHelp">Puntuar x2 cuando la ayuda esté oculta</label>
+              <input type="checkbox" id="doubleScoreNoHelp" ${setts.doubleScoreWithoutHelp ? 'checked':''}>
+            </div>
+            <p class="muted">Podrás activar/desactivar la ayuda desde las pantallas de juego. Si la ayuda está oculta y esta opción está activada, los aciertos puntúan el doble.</p>
           </div>
 
           <aside>
@@ -79,10 +86,10 @@ export async function renderSettings(root){
     </section>
   `;
 
-  // Aplicar configuración actual a elementos de audio
+  // Aplicar configuración de audio
   applyAudioSettings({ mute: snd.mute, volume: snd.volume });
 
-  // --- Listeners
+  // Listeners de sonido
   $('#muteToggle', root)?.addEventListener('change', (e)=>{
     const muted = e.target.checked;
     state.sounds = { ...getSoundState(state), mute: muted };
@@ -90,7 +97,6 @@ export async function renderSettings(root){
     applyAudioSettings({ mute: muted, volume: state.sounds.volume });
     announce(muted ? 'Sonido silenciado' : 'Sonido activado');
   });
-
   $('#volRange', root)?.addEventListener('input', (e)=>{
     const v = Math.max(0, Math.min(100, Number(e.target.value)));
     $('#volLabel', root).textContent = `${v}%`;
@@ -99,24 +105,33 @@ export async function renderSettings(root){
     store.save(state);
     applyAudioSettings({ mute: state.sounds.mute, volume: vol });
   });
-
-  // Botones de prueba
-  $('#testClick', root)?.addEventListener('click', ()=> audio.play('click'));
+  $('#testClick',   root)?.addEventListener('click', ()=> audio.play('click'));
   $('#testSuccess', root)?.addEventListener('click', ()=> audio.play('success'));
-  $('#testError', root)?.addEventListener('click', ()=> audio.play('error'));
-  $('#testLevel', root)?.addEventListener('click', ()=> audio.play('level'));
+  $('#testError',   root)?.addEventListener('click', ()=> audio.play('error'));
+  $('#testLevel',   root)?.addEventListener('click', ()=> audio.play('level'));
 
-  // Restaurar defaults
+  // NUEVOS listeners de ayuda/puntuación
+  $('#showWeightsDefault', root)?.addEventListener('change', (e)=>{
+    state.settings = { ...(state.settings||{}), showWeightsByDefault: !!e.target.checked };
+    store.save(state);
+    announce( e.target.checked ? 'La ayuda se mostrará por defecto' : 'La ayuda se ocultará por defecto' );
+  });
+  $('#doubleScoreNoHelp', root)?.addEventListener('change', (e)=>{
+    state.settings = { ...(state.settings||{}), doubleScoreWithoutHelp: !!e.target.checked };
+    store.save(state);
+    announce( e.target.checked ? 'Aciertos sin ayuda puntúan x2' : 'Puntuación normal al acertar' );
+  });
+
+  // Restaurar sonidos por defecto (solo rutas + volumen/mute)
   $('#restoreDefaults', root)?.addEventListener('click', ()=>{
     const ok = confirm('¿Restaurar las rutas de sonido por defecto?');
     if(!ok) return;
     const def = defaultState();
-    state.sounds = { ...def.sounds, mute: false, volume: 1 };
+    state.sounds = { ...def.sounds };
     store.save(state);
-    applyAudioSettings({ mute:false, volume:1 });
+    applyAudioSettings({ mute: state.sounds.mute, volume: state.sounds.volume });
     announce('Sonidos restaurados');
-    // actualizar listado mostrado
-    renderSettings(root);
+    renderSettings(root); // refrescar UI
   });
 
   announce('Ajustes abiertos');

@@ -81,3 +81,177 @@ code,kbd{font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 
 /* Placeholders de vistas posteriores */
 .view-card{max-width:900px; margin:0 auto}
+
+
+.menu-grid{display:grid; gap:1rem; grid-template-columns:1fr}
+@media (min-width: 980px){ .menu-grid{grid-template-columns:1.2fr .8fr} }
+.menu-left{display:grid; gap:1rem}
+.menu-right{display:grid; gap:1rem}
+
+
+.tile-actions{display:grid; gap:.8rem}
+.sub{display:block; font-weight:500; font-size:.9rem; opacity:.9}
+
+
+.btn-xl{font-size:1.05rem; padding:1rem 1.15rem; border-radius:14px;margin-top:5px;}
+.input-lg{font-size:1.05rem; padding:0.85rem 1rem; border-radius:14px}
+.label{font-weight:700; margin-bottom:.35rem}
+.help{color:var(--muted); font-size:.9rem; margin:.35rem 0 .5rem}
+.form-col{display:grid; gap:.4rem}
+
+
+.confirm-panel{margin-top:.6rem; border:1px solid var(--border)}
+.confirm-title{margin:.2rem 0 .25rem}
+
+
+.info-panel .tips{margin:.4rem 0 0 1rem}
+.info-panel li{margin:.2rem 0}
+
+
+.bits .bit{min-width:56px; min-height:56px} 
+
+
+/* HUD compacto */
+.hud-bar{position:sticky; top:4.75rem; z-index:9; display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; gap:.75rem; margin: .6rem 0 0; padding:.55rem .8rem; background:linear-gradient(180deg, var(--surface), var(--surface-2)); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow)}
+@media (max-width: 720px){ .hud-bar{grid-template-columns: 1fr} .hud-right{justify-content:flex-start} }
+.hud-left{display:flex; align-items:center; gap:.6rem}
+.hud-user{display:grid; gap:.1rem}
+.hud-name{font-weight:800}
+.hud-level{color:var(--muted); font-size:.9rem}
+.hud-center{display:grid; gap:.25rem}
+.hud-progress{height:12px; background:#0b122680; border:1px solid var(--border); border-radius:999px; overflow:hidden}
+.hud-progress-bar{height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--accent-2))}
+.hud-prog-text{font-variant-numeric: tabular-nums; color:var(--muted); font-size:.9rem}
+.hud-right{display:flex; align-items:center; gap:1rem; justify-content:flex-end}
+.hud-stat{background:#0a1433; border:1px solid var(--border); padding:.25rem .55rem; border-radius:10px}
+
+
+/* Nav deshabilitado visualmente */
+.main-nav .nav[disabled], .main-nav .nav.is-disabled{opacity:.45; filter:grayscale(25%); cursor:not-allowed}
+
+/* ======== Accesibilidad y usabilidad en juegos (v2) ======== */
+
+/* Más aire en las tarjetas de juego */
+.view-card .card.pad { padding: 10px; }
+
+/* Número objetivo: grande, centrado, muy visible */
+.target-big{
+  margin: .2rem auto .6rem;
+  display: inline-flex; justify-content:center; align-items:center;
+  min-width: 180px; padding:.4rem .9rem;
+  font-size: clamp(2rem, 3.2vw + 1rem, 3rem);
+  font-weight: 900; letter-spacing: .5px;
+  color: #00111a; background: #ffeaa7;
+  border: 2px solid #ffb703; border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+}
+
+/* Fila de pesos (128…1) arriba, horizontal y centrada */
+.weights-row{
+  --bit-size: 68px;  /* tamaño base: coordina con bits-xl */
+  display:flex; flex-wrap:wrap; justify-content:center; gap:.65rem;
+  margin: .15rem 0 .45rem; color: var(--muted); font-size: 1rem;
+}
+.weights-row .w{ width: var(--bit-size); text-align:center }
+
+/* Bits más grandes, centrados y con mejor separación */
+.bits.center{ justify-content: center; }
+.bits.bits-xl{ gap: .65rem; padding: .8rem; }
+.bits.bits-xl .bit{
+  width: var(--bit-size, 68px); height: var(--bit-size, 68px);
+  font-size: 1.35rem; border-radius: 14px;
+}
+.bits.readonly .bit{ cursor: default; }
+
+/* Entrada de respuesta más cómoda en tablet */
+.input-lg.wide{ min-width: 260px; width: min(420px, 90%); }
+
+/* Barra de acciones: intenta siempre visible y botón XL */
+.actions{ display:flex; gap:.6rem; align-items:center; flex-wrap:wrap }
+.pill.big{ font-size:1rem; padding:.45rem .7rem }
+
+/* Texto de objetivo binario (B2D) */
+.target-row{ display:grid; justify-items:center; gap:.35rem; margin-bottom:.2rem }
+
+
+/* ======== JUEGO — versión estable (alineado y accesible) ======== */
+/* Variables de tamaño para bits */
+:root{
+  --bit-gap: 12px;
+  --bit-min: 64px; /* tamaño mínimo de cada celda/bit */
+}
+
+/* Contenedor lógico de la vista de juego */
+.game-wrap{ display:grid; gap: .7rem; }
+
+/* Número objetivo: centrado, legible, alto contraste */
+.target-big{
+  margin: .25rem auto .5rem;
+  display: inline-flex; align-items:center; justify-content:center;
+  min-width: 190px; padding:.55rem 1.05rem;
+  font-size: clamp(2.1rem, 3.2vw + 1.1rem, 3.2rem);
+  font-weight: 900; letter-spacing: .4px;
+  color:#0b0e18; background:#ffeaa7;
+  border:2px solid #ffb703; border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+}
+
+/* GRID universal (8 columnas) — pesos y bits usan la MISMA rejilla */
+.grid-8{
+  display:grid;
+  grid-template-columns: repeat(8, minmax(var(--bit-min), 1fr));
+  gap: var(--bit-gap);
+  align-items:center;
+  justify-items:center;
+  width: 100%;
+}
+
+/* PESOS (128…1) — arriba, centrados, con números tabulares */
+.weights-row{
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.weights-row .w{
+  width:100%;
+  text-align:center;
+  line-height:1.2;
+  font-size: clamp(.9rem, 1vw + .45rem, 1.05rem);
+}
+
+/* BITS — cuadrados, grandes, dentro de la misma grid */
+.bits-grid .bit{
+  width:100%;
+  aspect-ratio: 1 / 1;                 /* siempre cuadrado */
+  font-size: clamp(1.15rem, 2.2vw, 1.6rem);
+  border-radius: 14px;
+}
+/* Estados visuales de los bits (con contraste alto) */
+.bit[data-on="1"]{
+  background: linear-gradient(180deg, #86efac, #34d399);
+  color:#062215; border-color:#2fb37f;
+}
+.bit[data-on="0"]{
+  background: linear-gradient(180deg, #141c40, #0b1226);
+  color:#e5e7eb; border-color:#2a3558;
+}
+.bit:focus-visible{ outline:none; box-shadow: var(--focus); }
+
+/* Acciones bajo los bits: intentos a la izquierda, comprobar a la derecha */
+.actions-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:.8rem; margin-top:.65rem;
+}
+.pill.big{ font-size:1rem; padding:.5rem .75rem }
+.btn-xl{ font-size:1.06rem; padding:.9rem 1.15rem; border-radius:14px }
+
+/* Entrada grande (Bin→Dec) para tablet */
+.input-lg.wide{ min-width: 260px; width: min(460px, 92%); }
+
+/* Más aire inferior para no chocar con el footer */
+.view-card .card.pad{ padding-bottom: 1.6rem; }
+
+/* --- IMPORTANTES: anulan reglas antiguas que causaban el fallo --- */
+/* Antes estaban en flex: las forzamos a grid aquí con mayor especificidad */
+.view-card .weights-row{ display: grid !important; }
+.view-card .bits.center{ justify-content: initial !important; }
+.view-card .bits.bits-xl{ gap: var(--bit-gap) !important; padding: 0 !important; }

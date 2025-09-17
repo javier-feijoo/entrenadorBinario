@@ -1,91 +1,140 @@
-// ===============================
+// js/views/menu.js (final corregido)
+// Exporta correctamente "renderMenu" como export nombrado.
+// UI simplificada y accesible: Continuar, Empezar de cero, Borrar perfil + nombre.
+
 import { store, defaultState, hasUser, setUser, resetUser } from '../store.js';
+import { $, announce,refreshHeader } from '../ui.js';
 import { navigate } from '../router.js';
 
+function showConfirm(root, { title='¿Seguro?', text='', onConfirm, onCancel }){
+  const slot = root.querySelector('.confirm-slot');
+  if(!slot) return;
+  const panel = document.createElement('div');
+  panel.className = 'confirm-panel card';
+  panel.innerHTML = `
+    <div class="pad">
+      <h3 class="confirm-title">${title}</h3>
+      <p class="muted">${text}</p>
+      <div class="form-row wrap">
+        <button class="btn bad btn-xl" id="cpConfirm">Sí, continuar</button>
+        <button class="btn ghost btn-xl" id="cpCancel">Cancelar</button>
+      </div>
+    </div>
+  `;
+  slot.replaceChildren(panel);
+  $('#cpConfirm', panel).focus();
+  $('#cpConfirm', panel).addEventListener('click', ()=>{ panel.remove(); onConfirm && onConfirm(); });
+  $('#cpCancel', panel).addEventListener('click', ()=>{ panel.remove(); onCancel && onCancel(); });
+}
 
 export async function renderMenu(root){
-const state = store.load();
-const userExists = hasUser(state);
+  const state = store.load();
+  const userExists = hasUser(state);
 
+  root.innerHTML = `
+    <section class="menu view-card">
+      <div class="card"><div class="pad">
+        <div class="menu-grid">
+          <div class="menu-left">
+            <h2 class="big">Aprende Binario Jugando</h2>
+            <p class="lead">Conversión decimal ⇄ binario con 8 bits. Guarda tu progreso por usuario.</p>
 
-root.innerHTML = `
-<section class="menu view-card">
-<div class="card"><div class="pad">
-<div class="hero">
-<div>
-<div class="big">Aprende Binario Jugando</div>
-<p class="lead">Practica conversiones con 8 bits. Elige un modo de juego cuando estés listo.</p>
-<div class="actions" style="margin-top:.8rem">
-<button class="btn primary" id="btnContinue" ${userExists?'':'disabled'}>Continuar</button>
-<button class="btn good" id="btnStart">Empezar partida</button>
-<button class="btn" id="btnNewUser">Nuevo usuario</button>
-<button class="btn ghost" id="btnAbout">¿Cómo se juega?</button>
-</div>
-<div class="warning" id="startWarn" hidden>
-<strong>Aviso:</strong> “Empezar partida” reiniciará puntuación, progreso y racha.
-</div>
-</div>
-<aside>
-<div class="hud card soft"><div class="pad">
-<p class="muted">Perfil actual:</p>
-<div class="form-row">
-<label class="sr-only" for="nameInput">Tu nombre</label>
-<input id="nameInput" type="text" placeholder="Tu nombre o nick" value="${state.profile.name||''}">
-<button class="btn" id="btnSaveName">Guardar nombre</button>
-</div>
-</div></div>
-</aside>
-</div>
-</div></div>
-</section>
-`;
+            <div class="tile-actions">
+              <button class="btn primary btn-xl block" id="btnContinue" ${userExists? '' : 'disabled'}>
+                Continuar
+                <span class="sub">Seguir donde lo dejaste</span>
+              </button>
+              <button class="btn good btn-xl block" id="btnStart">
+                Empezar de cero
+                <span class="sub">Reinicia puntuación y progreso</span>
+              </button>
+            </div>
 
+            <div class="confirm-slot" aria-live="polite"></div>
+          </div>
 
-const $ = (s)=> root.querySelector(s);
-const startWarn = $('#startWarn');
-const btnStart = $('#btnStart');
-const btnContinue = $('#btnContinue');
+          <aside class="menu-right">
+            <div class="card soft"><div class="pad">
+              <h3 class="section-title">Usuario</h3>
+              <p class="muted">Introduce un nombre corto o apodo. Se usa para guardar tu progreso.</p>
+              <div class="form-col">
+                <label for="nameInput" class="label">Nombre / Nick</label>
+                <input id="nameInput" class="input-lg" type="text" inputmode="text" autocomplete="name" placeholder="p. ej. AnaSMR" value="${state.profile.name||''}" aria-describedby="nameHelp" />
+                <div id="nameHelp" class="help">Mín. 2 caracteres. Puedes cambiarlo cuando quieras.</div>
+                <div class="form-row wrap">
+                  <button class="btn btn-xl" id="btnSaveName">Guardar nombre</button>
+                  <button class="btn btn-xl" id="btnNewUser">Borrar perfil</button>
+                </div>
+              </div>
+            </div></div>
 
+            
+          </aside>
+        </div>
+      </div></div>
+    </section>
+  `;
 
-// Guardar nombre
-$('#btnSaveName').addEventListener('click', ()=>{
-const v = $('#nameInput').value.trim();
-setUser(state, v);
-announce('Nombre guardado');
-btnContinue && btnContinue.removeAttribute('disabled');
-});
+  const enableContinue = ()=> {
+    const name = $('#nameInput', root).value.trim();
+    const btn = $('#btnContinue', root);
+    if(name.length >= 2){ btn.removeAttribute('disabled'); } else { btn.setAttribute('disabled','disabled'); }
+  };
 
+  // Guardar nombre
+  $('#btnSaveName', root)?.addEventListener('click', ()=>{
+    const name = $('#nameInput', root).value.trim();
+    if(name.length < 2){ announce('El nombre debe tener al menos 2 caracteres'); return; }
+    setUser(state, name);
+    refreshHeader(store.load());
+    announce('Nombre guardado');
+    enableContinue();
+  });
 
-// Continuar (requiere usuario)
-btnContinue?.addEventListener('click', ()=>{
-if(!hasUser(state)) return;
-navigate('#dec2bin');
-});
+  // Continuar
+  $('#btnContinue', root)?.addEventListener('click', ()=>{
+    if(!hasUser(state)) return;
+    navigate('#dec2bin');
+  });
 
+  // Empezar de cero
+  $('#btnStart', root)?.addEventListener('click', ()=>{
+    if(!hasUser(state)){
+      announce('Introduce y guarda tu nombre antes de empezar');
+      $('#nameInput', root).focus();
+      return;
+    }
+    showConfirm(root, {
+      title: '¿Empezar de cero?',
+      text: 'Se reiniciarán puntuación, progreso, racha y estadísticas. Tu nombre se mantiene.',
+      onConfirm: ()=>{
+        const fresh = defaultState();
+        fresh.profile.name = state.profile.name; // conserva nombre
+        localStorage.setItem('binTrainer.v2', JSON.stringify(fresh));
+        refreshHeader(store.load());
+        announce('Partida reiniciada');
+        navigate('#dec2bin');
+      }
+    });
+  });
 
-// Empezar partida (reinicia datos, con confirmación accesible)
-btnStart?.addEventListener('click', ()=>{
-startWarn.hidden = false;
-const ok = confirm('Empezar partida reiniciará puntuación, progreso y racha. ¿Quieres continuar?');
-if(!ok) return;
-const fresh = defaultState();
-fresh.profile.name = state.profile.name; // conservamos nombre
-localStorage.setItem('binTrainer.v2', JSON.stringify(fresh));
-announce('Partida iniciada desde cero');
-navigate('#dec2bin');
-});
+  // Borrar perfil
+  $('#btnNewUser', root)?.addEventListener('click', ()=>{
+    showConfirm(root, {
+      title: 'Borrar perfil',
+      text: 'Eliminará el nombre y todo el progreso guardado. Esta acción no se puede deshacer.',
+      onConfirm: ()=>{
+        resetUser(state);
+        refreshHeader(store.load());
+        $('#nameInput', root).value = '';
+        announce('Perfil borrado');
+        enableContinue();
+      }
+    });
+  });
 
-
-// Nuevo usuario (limpia perfil y progreso)
-$('#btnNewUser').addEventListener('click', ()=>{
-const ok = confirm('Crear un nuevo usuario borrará el perfil actual y su progreso. ¿Continuar?');
-if(!ok) return; resetUser(state); announce('Usuario restablecido');
-const nameEl = $('#nameInput'); nameEl.focus();
-});
-
-
-// Ayuda básica
-$('#btnAbout').addEventListener('click', ()=>{
-alert('Instrucciones rápidas:\n\n• Usa Tab y Espacio/Enter para alternar bits.\n• Tienes 3 intentos por número.\n• Completa 10 aciertos para subir de nivel.');
-});
+  // Accesibilidad: habilitar/deshabilitar Continuar según nombre
+  $('#nameInput', root)?.addEventListener('input', enableContinue);
+  enableContinue();
+  announce('Menú principal abierto');
 }
