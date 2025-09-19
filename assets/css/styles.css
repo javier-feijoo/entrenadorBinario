@@ -302,3 +302,70 @@ code,kbd{font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 
 /* Focus accesible */
 .switch input:focus-visible + .track{ outline:3px solid #7dd3fc; outline-offset:2px; }
+
+/* ===== Overlay modal elegante ===== */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(3,10,28,.6);
+  backdrop-filter: blur(2px);
+  display:flex; align-items:center; justify-content:center;
+  z-index: 1000;
+}
+.modal-card{
+  width:min(560px, 92vw);
+  background:linear-gradient(180deg,#0b1226,#0a1433);
+  border:1px solid var(--border);
+  border-radius:18px; box-shadow:0 18px 60px rgba(0,0,0,.45);
+  color:var(--text);
+}
+.modal-card .head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.9rem 1.1rem; border-bottom:1px dashed var(--border);
+}
+.modal-card .body{ padding:1.1rem; }
+.modal-card .actions{
+  display:flex; gap:.6rem; justify-content:flex-end;
+  padding:0 1.1rem 1.1rem;
+}
+.modal-title{ font-weight:900; font-size:1.25rem; }
+.modal-badge{
+  display:flex; align-items:center; gap:.6rem;
+  background:#0a1433; border:1px solid var(--border);
+  border-radius:12px; padding:.45rem .7rem; margin:.6rem 0;
+}
+.modal-badge img{ width:40px; height:40px; border-radius:8px }
+
+/* ===== Visual refinado: bits, espacios y mensajes ===== */
+:root{ --bit-min: 70px; --bit-gap: 14px; }          /* más grandes y aireados */
+.view-card .card.pad{ padding: 1.2rem 1.2rem 1.8rem; }
+
+.weights-row{ color:#a9b4d0; }                       /* ayuda un poco más clara */
+
+.bits-grid{ margin-top:.2rem; }
+.bits-grid .bit{
+  background: #0f1633;                               /* más claro que el card */
+  border:1px solid #253160;
+  box-shadow: 0 4px 12px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.03);
+}
+.bits-grid .bit:hover{ transform: translateY(-1px); }
+.bit[data-on="1"]{
+  background: linear-gradient(180deg,#2dd4bf,#10b981);
+  color:#052b21; border-color:#0ea87f; box-shadow: 0 6px 16px rgba(16,185,129,.35);
+}
+.bit[data-on="0"]{
+  background: #141d42; color:#e6ebff; border-color:#2b3a72;
+}
+
+/* Barra de ayuda (toggle) arriba y a la derecha, con aire */
+.helpbar{ margin:.35rem 0 .55rem; gap:1rem; }
+
+/* Mensajes de feedback con caja visible */
+.feedback{
+  margin-top:.8rem; padding:.6rem .8rem; border-radius:12px;
+  border:1px solid var(--border); background:#0b132e; color:#dbe7ff;
+}
+.feedback.ok{ border-color:#1ea97a; background:#0d2b1f; color:#d7ffed; }
+.feedback.err{ border-color:#b45353; background:#2b1114; color:#ffe3e3; }
+
+/* Que hidden gane a cualquier display previo */
+[hidden]{ display:none !important; }
+.weights-row[hidden]{ display:none !important; }

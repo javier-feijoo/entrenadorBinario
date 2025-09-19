@@ -48,6 +48,7 @@ function checkAnswer(root){
   if(ans === target){
     const dbl = !!state.settings?.doubleScoreWithoutHelp;
     const mult = (!helpVisible && dbl) ? 2 : 1;
+    $('#fbB2D', root).className = 'feedback ok'; 
     $('#fbB2D', root).textContent = '¡Correcto!';
     addHit(state, { mult });              // ⬅️ aplica multiplicador
     refreshHeader(state);
@@ -57,6 +58,7 @@ function checkAnswer(root){
 
   round.tries -= 1;
   $('#triesB2D', root).textContent = String(round.tries);
+  $('#fbB2D', root).className = 'feedback err'; 
   $('#fbB2D', root).textContent = `No es ${ans}. Intenta de nuevo.`;
   addMiss(state);
   refreshHeader(state);
@@ -121,10 +123,16 @@ export async function renderBin2Dec(root){
   updateHelpUI(root);
 
   // Eventos
-  $('#toggleHelpB2D', root).addEventListener('change', (e)=>{
-    helpVisible = !!e.target.checked;
-    updateHelpUI(root);
-  });
+$('#toggleHelpB2D', root).addEventListener('change', (e)=>{
+  helpVisible = !!e.target.checked;
+  updateHelpUI(root);
+  // ⚠️ Reinicia la ronda para evitar trampas
+  newRound(root);
+  announce(helpVisible
+    ? 'Ayuda activada. Nuevo número generado.'
+    : 'Ayuda desactivada. Nuevo número generado (aciertos x2 si está activo en Ajustes).'
+  );
+});
   $('#btnCheckB2D', root).addEventListener('click', ()=> checkAnswer(root));
 
   // Primera ronda
